@@ -1,0 +1,9 @@
+<div class="card-footer py-3 border-0">
+    <div class="text-center">
+        {% if token %}
+            Log in first to set up the passkey.
+        {% else %}
+            Secure your account with <a href="{{ url_for('auth.password', token=request_nonce()) }}" class="text-dark">Passkeys</a>
+        {% endif %}
+    </div>
+</div>

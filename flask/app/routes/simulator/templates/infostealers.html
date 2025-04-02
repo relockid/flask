@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+		<h2 class="mb-5"><img src="{{ url_for('static', filename='logo/relock.svg') }}" class="h2" />Infostealer</h2>
+
+		<div class="row">
+			<div class="col-2 mono f1">[problem statement]</div>
+			<div class="col"><p class="mb-4 pr3">In a targeted infostealer attack the attacker uses malware designed to infiltrate computer systems and steal information. Infostealers typically exfiltrate valuable data, including login credentials, authenticated session cookies, financials, and personally identifiable information, and send it to remote servers controlled by cybercriminals.</p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[simulation scenario]</div>
+			<div class="col"><p class="mb-3 pr3">In this scenario you will simulate an infostealer attack specifically designed to exfiltrate authenticated session cookies and Relock passive authentication keys. Once you click on the “Use exfiltrated keys” button, the sandbox will simulate a request to the application using your current key but coming from a different browser controlled by the “attacker”.</p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[expected outcome]</div>
+			<div class="col">
+				<p class="mb-4 pr3">The system will allow the attacker the make a request and the request will trigger server-side passive authentication key renewal, but the browser-side key of the legitimate user will remain the same. You can observe that in the footer of your application.</p>
+				<p class="mb-4 pr3">Once the legitimate user makes any request, the system sees the clash of passive authentication keys and logs off any devices using this account. In a real-world scenario, the system will also suspend access and alert the administrator about the attack.</p></div>
+		</div>
+
+		<div class="row mb-5 w-100 align-items-start gray">
+		  <h4 class="mb-3">Sandbox playground</h4>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='routing.svg') }}" class="mb-2" />Use exfiltrated keys</h3>
+		  	<p class="mono f1 w-75">Click on the button below to simulate the use of your current passive authentication keys by another browser.</p>
+		  	<p class="mono f1 w-75 mb-0">Server-side key ID: <span id="keyid">{{ x_key_remote_addr() }}</span>
+		  	<p class="mono f1 w-75 mb-0">Browser-side key ID: <span id="local">{{ x_key_remote_addr() }}</span>
+		  	<p class="mono f1 w-75">Last request from: <span id="identity">{{ x_key_remote_addr() }}</span></p>
+		  	<button href="{{ url_for('simulator.infostealers') }}" class="btn btn-warning ms-auto w-50" id="remove">Use exfiltrated keys</button>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='request.svg') }}" class="mb-2" />Make a legitimate request</h3>
+		  	<p class="mono f1 w-75 mb-4">Click on the button below to make a legitimate request using the version of passive authentication keys stored in your browser.</p>
+		  	<div class="mb-1">&nbsp;</div>
+		  	<p class="mono f1 w-75">Number of requests: {{ request_counter() }}</p>
+		  	<a href="{{ url_for('simulator.infostealers') }}" class="btn btn-primary ms-auto w-50">Make a legitimate request</a>
+		  </div>
+		</div>
+
+		<script type="text/javascript" nonce="{{ request_nonce() }}">
+			
+			(function () {
+				'use strict'
+
+				window.addEventListener('XKeyEstablished', function(event){
+					document.getElementById('keyid').innerHTML = window.relock.id.hexlify()
+					document.getElementById('local').innerHTML = window.relock.id.hexlify()
+					document.getElementById('remove').addEventListener("click", (event) => {
+						event.preventDefault();
+						window.relock.request('/relock/remote', {keys: true})
+							.then((response) => response.json())
+							.then((data) => {
+								document.getElementById('local').innerHTML = window.relock.id.hexlify()
+								document.getElementById('keyid').innerHTML = data.id
+								document.getElementById('identity').innerHTML = data.addr
+							 })
+							.catch((error) => {
+								console.error('Token validation failure:', error);
+							 });
+   				   	});
+				});
+
+				window.addEventListener('XReKeyingStop', function(event){
+					if(!event.detail.valid)
+						document.location = "{{ url_for('auth.clear') }}"
+				});
+			})()
+
+		</script>
+
+	</div>
+</section>	
+
+{% endblock %}

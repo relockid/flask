@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>{% if title %}{{ title }}{% else %}Session Sentinel demo{% endif %}</title>
+    <meta name="description" content="">
+    
+
+
+    {% block head %}
+    {% block styles %}
+    {{ bootstrap.load_css() }}
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" nonce="{{ request_nonce() }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com" nonce="{{ request_nonce() }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" nonce="{{ request_nonce() }}" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet" nonce="{{ request_nonce() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css')}}" nonce="{{ request_nonce() }}">
+    </style>
+
+    <link rel="icon" type="image/png" 
+          href="{{ url_for('static', filename='icons/favicon-96x96.png')}}" sizes="96x96" 
+          nonce="{{ request_nonce() }}" />
+    <link rel="icon" type="image/svg+xml" 
+          href="{{ url_for('static', filename='icons/favicon.svg')}}" 
+          nonce="{{ request_nonce() }}" />
+    <link rel="shortcut icon" 
+          href="{{ url_for('static', filename='icons/favicon.ico')}}" 
+          nonce="{{ request_nonce() }}" />
+    <link rel="apple-touch-icon" 
+          href="{{ url_for('static', filename='icons/apple-touch-icon.png')}}" 
+          nonce="{{ request_nonce() }}" />
+    <link rel="manifest" 
+          href="{{url_for('static', filename='icons/site.manifest')}}" 
+          nonce="{{ request_nonce() }}" />
+
+    <meta name="apple-mobile-web-app-title" content="relock" />
+
+    {% endblock %}
+    {% endblock %}
+</head>
+    <body>
+        <section class="hero is-primary is-fullheight">
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </section>
+        
+    </body>
+</html>

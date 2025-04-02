@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+		<h2 class="mb-5"><img src="{{ url_for('static', filename='logo/relock.svg') }}" class="h2" />Adversary in the middle</h2>
+
+		<div class="row">
+			<div class="col-2 mono f1">[problem statement]</div>
+			<div class="col"><p class="mb-3 pr3">In an Adversary-in-the-Middle attack, the attacker typically uses a phishing email or link to direct the user to a malicious proxy that looks like a legitimate website. The proxy acts as a login website and allows the attacker to intercept passwords and defeat all MFA protection, such as OTP or push notifications. </p>
+			<p class="mb-4 pr3">Currently the only protection against these attacks is the implementation of passkeys or other FIDO hardware keys as the only allowed authentication option (e.g., if password is offered as backup, attackers can modify the proxy to only display that option and bypass passkeys). </p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[simulation scenario]</div>
+			<div class="col"><p class="mb-3 pr3">In this scenario you will experience an AitM phishing attack as a victim. The application will send you a simulated phishing link. Once you click on it you will be redirected to an “evil” proxy posing as a legitimate login portal for the demo. Go ahead and log in with the credentials that you established, thus making them available to the “attacker”.</p>
+			<p class="mb-4 pr3">As the “attacker” introduces your credentials to the system to intercept access, they are discovered as a new device. The system will then send a device verification request to your email – in a typical attack a cybercriminal might bomb you with these until you accept. Act as a fatigued user and accept the new device. </p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[expected outcome]</div>
+			<div class="col"><p class="mb-5 pr3">Relock passive authentication discovers that your active authentication is being bypassed and intercepted by an AitM phishing attack. It blocks the attacker and alerts you to the ongoing malicious activity.</p></div>
+		</div>
+
+		<div class="row mb-5 w-100 align-items-start gray">
+		  <h4 class="mb-3">Sandbox playground</h4>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='mail.svg') }}" class="mb-2" />1. Send a phishing email</h3>
+		  	<p class="mono f1 w-75">Click on the button below to send a phishing email with a link to the “evil” proxy controlled by the simulated attacker. </p>
+		  	<button type="button" class="btn btn-primary ms-auto w-75" id="send">Send a phishing email</button>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='mailbox.svg') }}" class="mb-2" />2. Follow the phishing link </h3>
+		  	<p class="mono f1 w-75">Go ahead and get phished. Notice how the “evil” proxy looks the same as the legitimate application but uses a different domain address.</p>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='verify.svg') }}" class="mb-2" />3. Verify the new device </h3>
+		  	<p class="mono f1 w-75">When prompted verify the new device via email confirmation. This step simulates bypassing any additional MFA factors.</p>
+		  </div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[What exactly happened?]</div>
+			<div class="col"><p class="mb-3 pr3">When an attacker intercepts your login and password through the “evil” proxy, they do not have access to your Relock passive authentication keys, as these are origin-bound (they are never disclosed to an incorrect domain).</p>
+			<p class="mb-4 pr3">In this case the application sees the attacker as a new device and uses the highest security method selected by the administrator to verify a new device – in this case a simple confirmation email.</p>
+			<p class="mb-4 pr3">Once you click on the verification link in the email, a new browser window appears, and you are taken out of the phished connection to the legitimate website. The application then sees that your Relock keys (the “approver” device) and the ones it has preliminarily provided to the attacker’s browser (the “requester” device) are different and concludes that there is an ongoing malicious phishing attack.</p>
+			<p class="mb-4 pr3">The keys provided to the attacker’s browser are then destroyed, access is never provided, and the connection is blocked.</p></div>
+		</div>
+
+		<script type="text/javascript" nonce="{{ request_nonce() }}">
+			
+			(function () {
+				'use strict'
+
+				window.addEventListener('XKeyEstablished', function(event){
+					document.getElementById('send').addEventListener("click", (event) => {
+						event.preventDefault();
+						let token = window.relock.token()
+						let signature = window.relock.sign(token)
+						fetch('{{ url_for('simulator.adversary') }}', {
+							  method: 'POST',
+							  headers: {'Content-Type': 'application/json',
+									    'accept': 'application/json',
+									    'X-Key-Token': token.hexlify(),
+									    'X-Key-Signature': signature.hexlify(),
+									    'X-Key-Time': Math.round(+new Date()/1000),
+									    'Access-Control-Allow-Credentials': 'true',
+									    'X-CSRFToken': document.csrf()},
+							  credentials: 'include'
+						}).then((response) => response.json())
+ 						  .then((data) => {
+ 						  	  document.getElementById('send').innerHTML = 'Send phishing email again'
+						  }).catch((error) => {
+							console.error('Token validation failure:', error);
+						  })
+   				   	});
+				});
+
+			})()
+
+		</script>
+
+	</div>
+</section>	
+
+{% endblock %}

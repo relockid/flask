@@ -1,0 +1,51 @@
+{% extends 'section.html' %}
+
+{% block body %}
+
+	<div class="card-body p-5">
+		<h1 class="fs-4 card-title fw-bold mb-4">Delete account</h1>
+		<div class="mb-4">
+            <p class="text-muted mono">To delete your account entairly you need to confirm this action.
+            </p>
+		</div>
+		<div class="mb-4 text-center">
+			<img src="{{ url_for('auth.static', filename='delete.svg') }}" class="fingerprint">
+		</div>
+		{% if token %}
+        <div class="align-items-center d-flex">
+            <button type="button" class="btn btn-primary ms-auto w100" id="press">
+                Click to delete account
+            </button>
+        </div>
+        {% endif %}
+	</div>
+
+    <script type="text/javascript" nonce="{{ request_nonce() }}">
+        
+        (function () {
+            'use strict'
+
+            window.addEventListener('XKeyEstablished', function(event){
+            	{% if not credential %}
+                    document.getElementById('press').addEventListener("click", (event) => {
+                        document.location = "{{ url_for('auth.delete', token=token) }}"
+                    });
+                {% else %}
+                	document.getElementById('press').addEventListener("click", (event) => {
+                		window.Passkeys.authenticate('{{ credential }}');
+                	});
+                {% endif %}
+            });
+
+            window.addEventListener('XKeyFailure', function(event){
+				document.location = "{{ url_for('index.index') }}"
+            });
+
+            window.addEventListener('XPasskeyAuthenticated', function(event){
+                document.location = "{{ url_for('auth.remove', token=request_nonce()) }}"
+            });
+        })()
+
+    </script>
+
+{% endblock %}

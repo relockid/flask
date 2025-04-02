@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+		<h2 class="mb-5"><img src="{{ url_for('static', filename='logo/relock.svg') }}" class="h2" />Cross-Site Request Forgery</h2>
+
+		<div class="row">
+			<div class="col-2 mono f1">[problem statement]</div>
+			<div class="col"><p class="mb-4 pr3">Cross-Site Request Forgery (CSRF) is a type of web security vulnerability that allows an attacker to execute unauthorized actions on behalf of a user without their knowledge or consent also enabling POST-based Cross-Site Scripting (XSS). While CSRF tokens, SameSite cookies, and Referer-based validation are effective defenses, they can be bypassed if misconfigured or missing by developer.</p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[expected behaviour]</div>
+			<div class="col"><p class="mb-4 pr3">The passive system should detect any malicious request coming from outside the legitimate browser sandbox, using a robust cryptographic method that ensures unpredictability and unambiguous signatures for legitimate requests/traffic. If malicious request is detected system should block request processing.</p></div>
+		</div>
+
+		<div class="row mb-5 w-100 align-items-start gray">
+		  <h4 class="mb-3">Sandbox playground</h4>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='firewall.svg') }}" class="mb-2" />Protected sensitive action</h3>
+		  	<p class="mono f1 w-75">Let’s consider a scenario where a website allows users to change their email address by submitting a form. In real world scenario victim may not even have an ability to prevent the attack.</p>
+		  	<form action="{{ url_for('simulator.requests') }}" method="POST">
+			  <input type="hidden" name="old" value="{{ email }}">
+			  <input type="email" name="email" placeholder="{{ email }}" required>
+			  <input type="submit" value="Change Email">
+			</form>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='inject.svg') }}" class="mb-2" />Malicious request from outside</h3>
+		  	<p class="mono f1 w-75">You’re logged into this website and meanwhile, you unknowingly visit another website that has been compromised and contains hidden code that sends requests to the this service, using your session.</p>
+		  	<form action="{{ url_for('simulator.requests') }}" method="POST" class="mb-3" id="malicious">
+			  <input type="hidden" name="old" value="{{ email }}">
+			  <input type="email" name="email" value="attacker@example.com" required>
+			  <input type="submit" value="Run unsigned request">
+			</form>
+		  	<p class="mono f2 w-75">In-real world scenario this action does not require any user action. Opening the malicious website triggers the action.</p>
+		  </div>
+		</div>
+
+		<script type="text/javascript" nonce="{{ request_nonce() }}">
+			
+			(function () {
+				'use strict'
+
+				window.addEventListener('XKeyEstablished', function(event){
+					document.getElementById('malicious').addEventListener("submit", (event) => {
+						event.preventDefault();
+						let form = document.getElementById('malicious');
+						let token = form.querySelector('input[name="X-Key-Token"]')
+							token.setAttribute('value', '')
+						let signature = form.querySelector('input[name="X-Key-Signature"]')
+							signature.setAttribute('value', '')
+						form.submit()
+   				   	});
+				});
+			})()
+
+		</script>
+
+		<div class="row">
+			https://medium.com/@L1lith/cross-site-request-forgery-csrf-cheat-sheet-a4b3d07ed860
+		</div>
+
+	</div>
+</section>	
+
+{% endblock %}
