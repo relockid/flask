@@ -1,0 +1,47 @@
+{% set block_hamburger = True %}
+{% set block_footer = True %}
+{% extends 'section.html' %}
+
+{% block body %}
+
+<div class="card-body p-5">
+    <h1 class="fs-4 card-title fw-bold mb-5 text-center">Strict account protection is disabled</h1>
+    
+    {% if 'user' in error %}
+        <script type="text/javascript" nonce="{{ request_nonce() }}">
+            (function () {
+                'use strict'
+                window.addEventListener('XKeyEstablished', function(event){
+                    document.location = "{{ url_for('auth.clear') }}"
+                });
+            })()
+        </script>
+    {% else %}
+        <div class="mb-3">
+            
+
+            <div class="countdown">
+              <svg viewBox="-50 -50 100 100" stroke-width="10">
+                <circle r="45"></circle>
+                <circle r="45" pathLength="1"></circle>
+              </svg>
+            </div>
+
+            <div class="form-check form-switch mb-2 login-checkboxes me-3 mb-5">
+                Strict Account Protection has been temporarily disabled. You can now sign in using another browser. The strict protection will automatically restart after the countdown.
+            </div>
+
+            <h3 class="mb-5 text-center login-checkboxes">
+                You can continue the process in the new browser.
+            </h3>
+        </div>
+
+        <div class="align-items-center d-flex">
+            <a href="{{ url_for('index.index') }}" type="submit" class="btn btn-primary ms-auto w100">
+                Restart strict protection now  
+            </a>
+        </div>
+    {% endif %}
+</div>
+                    
+{% endblock %}

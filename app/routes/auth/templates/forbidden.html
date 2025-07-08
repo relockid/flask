@@ -1,0 +1,37 @@
+{% extends 'section.html' %}
+
+{% block body %}
+
+	<div class="card-body p-5">
+		<h1 class="fs-4 card-title fw-bold mb-3">Strict account protection</h1>
+		<div class="mb-5 login-checkboxes">
+			<p class="text-muted mono mb-4">Sign-ins from untrusted browsers are not allowed. This browser must be approved before access is granted.</p>
+			<h4>Phishing warning</h4>
+			<p class="text-muted mono">Have you used this browser here before? Check the address bar and see if the domain is correct.</p>
+		</div>
+		{% if devices %}
+		<div class="text-muted mono login-checkboxes mb-4 mt-2">
+			<h4>New browser aproval</h4>
+			To approve this browser, use your trusted browser and temporarily disable <span class="black text-warning">Strict Account Protection</span> from your login screen.</div>
+		<div class="forbidden mt-2">
+			{% for key, value in devices.items() %}
+				{% set ico = 'browser/' + value.get('browser').lower() + '.svg' %}
+				<div class="d-flex mt-2">
+					<img src="{{ url_for('static', filename=ico) }}" class="align-self-start mt-1 me-3" />
+
+					<div class="align-self-end row pt-2 ms-1">
+						{{ value.get('os') }}/{{ value.get('kind') }}
+						{{ value.get('browser') }}/{{ value.get('product') }}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+        <div class="align-items-center d-flex mt-5">
+            <a href="{{ url_for('index.index') }}" type="submit" class="btn btn-primary ms-auto w100">
+                Sign-in   
+            </a>
+        </div>
+		{% endif %}
+	</div>
+
+{% endblock %}
