@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+
+		<h2 class="mb-5">Cryptographic continuous passive authentication </h2>
+		<p class="mb-4 pr3">Relock is a high-frequency cryptographic key rotation server that authenticates each individual request using ephemeral, transient, secret. This enables digital platforms to implement cryptographic continuous passive authentication - without any user friction.</p>
+
+		<p class="mb-5 pr3">By leveraging rapid, per-request key changes, Relock ensures every interaction is independently verified, boosting security posture while maintaining a seamless user experience. Server is designed to scale effortlessly, making it ideal for use cases that require both high performance and uncompromised trust.</p>
+
+		<h3 class="mb-3">How it works</h3>
+		<p class="mb-3 pr3">In today’s digital landscape, traditional authentication methods, often reliant on static secrets and one-time checks, are increasingly vulnerable to sophisticated threats. Relock introduces a groundbreaking solution through purely cryptographic continuous passive authentication.</p>
+
+		<p class="mb-3 pr3">Relock’s innovative technology operates seamlessly and silently in the background, constantly validating the legitimacy of every user interaction. By continuously generating and verifying dynamic, ephemeral proofs instead of relying on static secrets, Relock fundamentally shifts to a model where the client’s identity is continuously verified throughout a session. This key change in how trust is established and maintained between clients and servers delivers a robust framework for securing sensitive online interactions.</p>
+
+		<p class="mb-4 pr3">At its core, Relock’s algorithm employs a sophisticated method of continuous cryptographic validation for client-server interactions. This verification involves three unique elements: mutual encryption, transient identity and request-level ephemeral authentication.
+
+		<h3 class="mb-3">Mutual encryption</h3>
+		<p class="mb-3 pr3">The entire communications between the client and the server are robustly reinforced through the extensive use of ephemeral cryptographic keys, and digitally signed cookies and tokens.</p>
+
+		<p class="mb-3 pr3">The underlying cryptographic keys for the solution are mutually encrypted, creating a powerful security barrier. Specifically, server-side data cannot be decrypted because its corresponding decryption key resides exclusively on the browser side, and similarly, browser-side data cannot be decrypted because its decryption key exists solely on the server side.</p>
+
+		<p class="mb-4 pr3">On the browser side, cryptographic keys are stored using a combination of localStorage, sessionStorage, and HTTP-only cookies. These storage mechanisms are used in conjunction to ensure that the stored cryptographic keys are origin-bound, rendering them inaccessible across different origins or domains and further bolstering security.</p>
+
+		<h3 class="mb-3">Transient identity</h3>
+		<p class="mb-3 pr3">After initial key agreement both the server and the client possess unique, symmetric shared secret.</p>
+
+		<p class="mb-3 pr3">Each new session with an established client commences with the server validating that the client request holds the apropriate data (cookies, tokens, signature) proves the possession of shared secret. After confirmation of possession server issue an key material required to decrypt the shared secret on client-side in a secure channel.</p>
+
+		<p class="mb-3 pr3">Following this possession validation, the server renew/rotate the self-side secret and issue together with response a random one-time-use nonce for the client creating a challenge-response mechanism. If the client really has an access to the shared symmetric secret can repeat the rotation operation and prove it by a separate Fetch API call.</p>
+
+		<p class="mb-3 pr3">At the conclusion of a session, both the client and the server retain components necessary to reconstruct a shared secret. Specifically, the client holds an encrypted version of the secret, securely stored in cookies and localStorage, where the encryption key exists solely on the server. Conversely, the server retains the encrypted shared secret, with the corresponding decryption key stored—also in encrypted form—on the client side.</p>
+
+		<p class="mb-3 pr3">Neither the client nor the server has access to the bytes of shared secret until the session is actively re-established. This design ensures that the shared secret remains inaccessible and secure during periods of inactivity.</p>
+
+		<p class="mb-4 pr3">This mechanism ensures that whenever an established client attempts to initiate a new session, it can do so only when connected to a legitimate web application server. During this process, the shared secret is automatically renewed, reinforcing trust between the client and server.</p>
+
+		<h3 class="mb-3">Request-level authentication</h3>
+
+		<h4 class="mb-3">Possession validation</h4>
+		<p class="mb-3 pr3">For each request, the client must demonstrate ability of access to the shared secret and provide a valid signature, both of which are verified by the server. The server validates the request by checking the presence and correctness of:</p>
+
+		<p class="mb-3 pr3">
+			<ol>
+				<li>one-time-use cookies set before by the server,</li>
+				<li>an ephemeral token generated by the client,</li>
+				<li>a client-generated token signature</li>
+			</ol>
+		</p>
+
+		<p class="mb-3 pr3">This elements proves client access to the shared secret, as the ephemeral token must be derived from the shared secret to be considered valid. The signature is expected to be generated using the client’s private key, which is assumed to remain securely stored on the client side and never transmitted. The cookies have ephemeral nature and are changed each time the shared secret is renewed.</p>
+
+		<h4 class="mb-3">Rotattion on-demand</h4>
+		<p class="mb-3 pr3">While ephemeral data possession evidences provides a secure and efficient means of verifying client identity for most interactions, key rotation should be enforced as frequent as possible especially for critical actions to enhance security and reduce the long-term impact of potential key compromise.</p>
+
+		<p class="mb-3 pr3">This is achieved through a challenge-response mechanism: the server sends a unique nonce (random set of bytes) along with the requested web page to the client. The client is then expected to renew a shared secret and, using a proprietary algorithm, derive and send a proof to the server, demonstrating its ability to successfully access to the shared secret.</p>
+
+		<p class="mb-3 pr3">Nonce issue does not automatically trigger key rotation. Instead, server-side key rotation occurs just prior to client proof validation and is considered inevitable at that stage. This ensures that any attempt to authenticate triggers a secure re-evaluation of key validity.</p>
+
+		<p class="mb-3 pr3">In-session key rotation can also be selectively implemented at specific endpoints or critical actions, and, if necessary, can be limited to short time intervals to reduce overhead while maintaining security.</p>
+
+
+		<h3 class="mb-3">Self-compromise detection</h3>
+		<p class="mb-3 pr3">This approach ensures that the client’s long-term identity is consistently verified and updated, significantly reducing the window of attack. The attack surface is effectively limited to the period during which the legitimate endpoint is inactive.</p>
+
+		<p class="mb-3 pr3">In the event of a key collision—such as an unauthorized attempt to assume an identity—a breach detection becomes inevitable. When an adversary triggers a server-side key rotation, the legitimate identity owner will lose access, providing a deterministic signal of compromise.</p>
+	</div>
+</section>	
+
+{% endblock %}

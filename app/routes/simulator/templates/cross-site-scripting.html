@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+		{% include 'mini.html' %}Cross-Site Scripting (XSS)</h2>
+
+		<div class="row">
+			<div class="col-2 mono f1">[problem statement]</div>
+			<div class="col"><p class="mb-4 pr3">Cross-Site Scripting (XSS) is a security vulnerability that allows an attacker to inject malicious scripts into web pages viewed by other users. The attacker typically exploits a flaw in a web application's input handling, where user-supplied data is not properly sanitized or escaped before being rendered on the page. When a victim views the compromised page, the malicious script executes within their browser, running with the same privileges as the user. This can lead to unauthorized actions such as stealing session cookies, redirecting users to malicious websites, or performing actions on behalf of the user without their consent. XSS attacks can be challenging to detect because the malicious script is executed in the user's browser, often without any visible signs of compromise.</p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[expected behaviour]</div>
+			<div class="col"><p class="mb-4 pr3">Passive authentication is not designed to prevent an XSS attack, but it does include a key distribution mechanism that prevents the extraction of all the data required to intercept the transient key and user session. However, it should be noted that XSS attacks remain a threat, as the adversary can control the code on the vulnerable web page..</p></div>
+		</div>
+
+		<div class="row mb-5 w-100 align-items-start gray">
+		  <h4 class="mb-3">Sandbox playground</h4>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='extract.svg') }}" class="mb-2" />1. Extract sensitive data</h3>
+		  	<p class="mono f1 w-75">This action simulates the exfiltration of sensitive data from the browser by a malicious script injected via XSS. To simulate this, the HTTP-only cookies are removed from the browser, as the attacker does not have access to these cookies.</p>
+			<div class="mono f1">Transient key ID: <span id="identity">None</span></div>
+			<div class="mono f1 mb-3">Enviroment ready: <span id="data">None</span></div>
+		  	<button class="btn mt-4 btn-success ms-auto w-50" id="fetch">
+		  	Simulate an attack</button>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='unauthorized.svg') }}" class="mb-2" />2. Make malicious request to server</h3>
+		  	<p class="mono f1 w-75">The attacker (represented by your browser) attempts to query the server with "extracted" data. They will have access to all data except for HTTP-only cookies, which JavaScript cannot access.</p>
+		  	<p class="mono f1 w-75">Remember to always use a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP" target="_blank">Content Security Policy</a> (CSP) to specify which JS/CSS resources the browser should execute, as XSS remains a common threat.</p>
+
+		  	<button class="btn mt-4 btn-secondary ms-auto w-50" id="activate">
+		  	Make request as an adversary</button>
+		  </div>
+		</div>
+
+		<script type="text/javascript" nonce="{{ request_nonce() }}">
+			
+			(function () {
+				'use strict'
+
+				window.addEventListener('XKeyEstablished', function(event){
+
+					document.getElementById('fetch').addEventListener("click", (event) => {
+						event.preventDefault();
+						let token = window.relock.token()
+						let signature = window.relock.sign(token)
+						let button = document.getElementById('fetch')
+						let activate = document.getElementById('activate')
+						fetch('{{ url_for('simulator.cross_site_scripting') }}', {
+							  method: 'POST',
+							  headers: {'Content-Type': 'application/json',
+									    'accept': 'application/json',
+									    'X-Key-Token': token.hexlify(),
+									    'X-Key-Signature': signature.hexlify(),
+									    'X-Key-Time': Math.round(+new Date()/1000),
+									    'Access-Control-Allow-Credentials': 'true',
+									    'X-CSRFToken': document.csrf()},
+							  credentials: 'include'
+						}).then((response) => response.json())
+ 						  .then((data) => {
+ 						  	  document.getElementById('identity').innerHTML = window.relock.id.hexlify()
+ 						  	  document.getElementById('data').innerHTML = data.status
+ 						  	  button.classList.add('btn-secondary')
+ 						  	  button.classList.remove('btn-success')
+
+ 						  	  activate.classList.add('btn-success')
+ 						  	  activate.classList.remove('btn-secondary')
+ 						  	  activate.addEventListener("click", (event) => {
+ 						  	  	document.location = '{{ url_for('simulator.cross_site_scripting') }}'
+ 						  	  })
+						  }).catch((error) => {
+							console.error('Token validation failure:', error);
+						  })
+   				   	});
+				})
+			})()
+
+		</script>
+
+		<div class="row">
+			<div class="col-2 mono f1">[security examples]</div>
+			<div class="col">
+				<p class="mb-4 pr3">https://medium.com/@Land2Cyber/real-world-examples-of-xss-attacks-and-how-they-were-executed-531e0e33e85b</p>
+				<p class="mb-4 pr3">https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/XSS</p>
+			</div>
+		</div>
+
+	</div>
+</section>	
+
+{% endblock %}

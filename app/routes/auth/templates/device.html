@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<section class="h-80">
+		<div class="container h-100">
+			<div class="row justify-content-sm-center h-100">
+				<div class="">
+					{% include 'logo.html' %}
+
+<script type="text/javascript" nonce="{{ request_nonce() }}">
+	
+	(function () {
+		'use strict'
+
+		window.addEventListener('XKeyEstablished', function(event){
+			if(event.detail.authenticated === false)
+				if(event.detail.owner === true)
+					if(event.detail.credential)
+						if(window.PublicKeyCredential)
+							document.location = "{{ url_for('auth.passkey') }}"
+						else
+							document.location = "{{ url_for('auth.password') }}"
+					else
+						document.location = "{{ url_for('auth.password') }}"
+				else
+					document.location = "{{ url_for('auth.signin') }}"
+			else
+				console.log(event.detail)
+				// document.location = "{{ url_for('index.index') }}"
+		});
+
+		window.addEventListener('XReKeyingStop', function(event){
+			if(!event.detail.valid)
+				console.log(event.detail)
+				// document.location = "{{ url_for('auth.clear') }}"
+		});
+	})()
+
+</script>
+
+					<div class="text-center mt-5 text-muted mono">
+						Copyright &copy; 2025 &mdash; relock Inc.
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+{% endblock %}
+			  
