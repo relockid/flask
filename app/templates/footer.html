@@ -1,0 +1,23 @@
+    {% if not block_footer is defined %}
+        <footer class="d-flex justify-content-center">
+            <div class="mt-4 mono">
+                Transient key ID: <span id="transient_key"></span>
+                established at: <span id="established_at"></span>
+            </div>
+        </footer>
+
+        <script type="text/javascript" nonce="{{ request_nonce() }}">
+            
+            (function () {
+                'use strict'
+
+                window.addEventListener('XKeyEstablished', function(event){
+
+                    document.getElementById('transient_key').innerHTML = window.relock.id.hexlify()
+                    document.getElementById('established_at').innerHTML = new Date()
+
+                })
+            })()
+
+        </script>
+    {% endif %}

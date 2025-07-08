@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+		{% include 'mini.html' %}Session token hijacking</h2>
+
+		<div class="row">
+			<div class="col-2 mono f1">[problem statement]</div>
+			<div class="col"><p class="mb-4 pr3">Session token hijacking happens when an attacker steals or intercepts a session token (also known as a session ID or authentication token) that is used to identify and authenticate a user during an active session. If an attacker manages to steal this session token, they can impersonate the user and access their session without needing to know their credentials.</p></div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 mono f1">[expected behaviour]</div>
+			<div class="col"><p class="mb-4 pr3">The passive system should detect the device as an unknown new device, and as the session is still active without a trusted device connected, the system should terminate the session and send a security signal.</p></div>
+		</div>
+
+		<div class="row mb-5 w-100 align-items-start gray">
+		  <h4 class="mb-3">Sandbox playground</h4>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='toggle_off.svg') }}" class="mb-2" />Unlink passive keys</h3>
+		  	<p class="mono f1 w-75">First remove the passive authentication keys from your browser. Click the button below to ensure keys no longer exists.</p>
+		  	<p class="mono f1 w-75">Current key ID: <span id="identity">db9781665a98ecb2dc9a82e1a57a59e5</span></p>
+		  	<a href="{{ url_for('simulator.hijacking') }}" id="remove">Remove passive keys</a>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='request.svg') }}" class="mb-2" />Make request</h3>
+		  	<p class="mono f1 w-75">Request with existsing passive keys simply display this page again - without keys you should be signed out from the demo app.</p>
+		  	<p class="mono f1 w-75">Number of requests: {{ request_counter() }}</p>
+		  	<a href="{{ url_for('simulator.hijacking') }}">&rarr; Make new request to server</a>
+		  </div>
+		</div>
+
+		<script type="text/javascript" nonce="{{ request_nonce() }}">
+			
+			(function () {
+				'use strict'
+
+				window.addEventListener('XKeyEstablished', function(event){
+					document.getElementById('identity').innerHTML = window.relock.id.hexlify()
+					document.getElementById('remove').addEventListener("click", (event) => {
+						event.preventDefault();
+						window.relock.clear(true)
+   					   	document.getElementById('identity').innerHTML = 'None'
+   				   	});
+				});
+
+				window.addEventListener('XReKeyingStop', function(event){
+					if(!event.detail.valid)
+						document.location = "{{ url_for('auth.clear') }}"
+				});
+			})()
+
+		</script>
+
+	</div>
+</section>	
+
+{% endblock %}

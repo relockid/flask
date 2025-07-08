@@ -1,0 +1,34 @@
+{% set block_rotation = True %}
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="h-100">
+        <div class="container h-100">
+            <div class="row justify-content-sm-center h-100">
+                <div class="">
+                    {% include 'logo.html' %}
+
+    <script type="text/javascript" nonce="{{ request_nonce() }}">
+        
+        (function () {
+            'use strict'
+
+            window.addEventListener('XReKeyingStop', function(event){
+                window.relock.clear()
+            });
+        })()   
+
+
+
+    </script>
+
+                    <div class="text-center mt-5 text-muted mono">
+                        Copyright &copy; 2025 &mdash; relock Inc.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+              

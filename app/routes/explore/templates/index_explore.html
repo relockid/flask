@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="container-fluid insider">
+	<div class="data">
+
+		<h2 class="mb-5">Explore technology resources</h2>
+		<p class="mb-4 pr3">Rely on the Relock device-bound identity system to add sophisticated authentication and authorization to your applications. Centralize and manage users from multiple identity providers and give them device-bounded, seamless, cryptographic extra layer of security. Finely control access with a degree of customization that can accommodate even the most complex security requirements.</p>
+
+		<p class="mb-5 pr3">By leveraging rapid, per-request key changes, Relock ensures every user interaction is independently verified, boosting security posture while maintaining a seamless user experience. System is designed to scale effortlessly, making it ideal for use cases that require both high performance and uncompromised trust.</p>
+
+		<div class="row mb-5 w-100 align-items-start gray">
+		  <h4 class="mb-3">Software evaluation keys</h4>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='ticket.svg') }}" class="mb-2" />Development server key</h3>
+		  	<p class="mono f1 w-75 mb-5">To begin the software evaluation, you will need the server key. This key was automatically generated during registration and is linked to your account. By using the key and/or downloading the software, you <a href="{{ url_for('static', filename='Relock_Evaluation_EULA.pdf') }}">agree to be bound</a> by the terms of the evaluation agreement.</p>
+		  	<p class="mono f1">Personal server access key: <b>{{ key }}</b></p>
+		  </div>
+		  <div class="col">
+		  	<h3><img src="{{ url_for('simulator.static', filename='reflect.svg') }}" class="mb-2" />Deployment documentation</h3>
+		  	<p class="mono f1 w-75">Resources for Relock solution integrations and use cases. Relock Developer API docs, concepts, and guides for developers you may find on docs.relock.id portal.</p>
+
+		  	<p class="mono f1 w-75">Start with how it works if you’re new to Relock, or find the step in your journey and follow the links to browse docs.</p>
+		  	<a href="https://docs.relock.id" class=" s-auto w-50" id="send">
+		  	Visit deploymnet documentation portal</a>
+		  </div>
+		</div>
+
+	</div>
+</section>	
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'section.html' %}
+
+{% block body %}
+
+<div class="card-body p-5">
+    <h1 class="fs-4 card-title fw-bold mb-4">{{ current_user.email }}</h1>
+    <form method="POST" class="needs-validation" novalidate="" autocomplete="off">
+
+        <div class="mb-3">
+            <label class="mb-2 text-muted" for="email">E-Mail Address</label>
+            <input id="email" type="email" class="form-control" name="email" value="" required placeholder="{{ current_user.get_email() }}">
+            <div class="invalid-feedback">
+                Email is invalid
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="mb-2 text-muted" for="password">Password</label>
+            <input id="password" type="password" class="form-control" name="password" required placeholder="">
+            <div class="invalid-feedback">
+                Password is required
+            </div>
+        </div>
+
+        <p class="form-text text-muted mb-3">
+            You can change your account password and email.
+        </p>
+
+        <div class="align-items-center d-flex">
+            <button type="submit" class="btn btn-primary ms-auto">
+                Save    
+            </button>
+        </div>
+    </form>
+</div>
+<div class="card-footer py-3 border-0">
+    <div class="text-center">
+        Already have an account? <a href="{{ url_for('index.index') }}" class="text-dark">Login</a>
+    </div>
+</div>
+
+{% endblock %}

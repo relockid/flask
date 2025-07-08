@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<section class="h-100">
+		<div class="container h-100">
+			<div class="row justify-content-sm-center h-100">
+				<div class="">
+					{% include 'logo.html' %}
+					<div class="card shadow-lg">
+						
+						{% block body %}{% endblock %}
+
+					</div>
+					<div class="text-center mt-5 text-muted">
+						Copyright &copy; 2024-20xx &mdash; Your Company 
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<script src="{{url_for('index.static', filename='login.js')}}" nonce="{{ request_nonce() }}"></script>
+{% endblock %}

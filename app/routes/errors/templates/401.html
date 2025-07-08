@@ -1,0 +1,14 @@
+{% extends 'error.html' %}
+
+{% block content %}
+
+  <div class="error">
+    <div class="error__content">
+      <h2>{{ code }}</h2>
+      <h3>Unauthorized</h3>
+      <p class="mono">{{ description }}</p>
+      <a class="btn btn-accent btn-pill" href="{{ url_for('index.index') }}">&larr; Back</a>
+    </div>
+  </div>
+  
+{% endblock %}

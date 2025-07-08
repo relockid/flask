@@ -1,0 +1,64 @@
+{% extends 'section.html' %}
+
+{% block body %}
+
+<div class="card-body p-5">
+    <h1 class="fs-4 card-title fw-bold mb-4">Sign in</h1>
+    <form method="POST" class="needs-validation" novalidate="">
+
+        <div class="mb-3">
+            <label class="mb-2 text-muted" for="email">Email Address</label>
+            <input id="email" type="email" 
+                              class="form-control" name="email" 
+                              value="{% if email!=None %}{{ email }}{% endif %}" 
+                              placeholder="Work email"
+                              autocomplete="email" 
+                              autofocus
+                              required>
+            <div class="invalid-feedback{% if 'user' in error or 'email' in error %} visible{% endif %}">
+                {% if 'user' in error %}
+                    This address not exists
+                {% else %}
+                    This address is incorrect
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="mb-2 text-muted" for="password">Password</label>
+            <input id="password" type="password" 
+                                 class="form-control" 
+                                 name="password"
+                                 pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                 placeholder="The password"
+                                 autocomplete="password" 
+                                 value="{% if passwd!=None %}{{ passwd }}{% endif %}"
+                                 autofocus
+                                 required>
+            <div class="invalid-feedback{% if 'passwd' in error or 'invalid' in error %} visible{% endif %}">
+                {% if 'passwd' in error %}
+                    must contains digits and symbols, min. 8 chars
+                {% elif 'invalid' in error %}
+                    Invalid password. <a href="{{ url_for('auth.forgot') }}" class="text-dark">Reset password</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <p class="form-text text-muted mb-3 mono">
+            By using you agree with our terms and condition.
+        </p>
+
+        <div class="align-items-center d-flex">
+            <button type="submit" class="btn btn-primary ms-auto w100">
+                Continue   
+            </button>
+        </div>
+    </form>
+</div>
+<div class="card-footer py-3 border-0">
+    <div class="text-center">
+        Don't have an account? <a href="{{ url_for('.signon') }}" class="text-dark invert">Create One</a>
+    </div>
+</div>
+                    
+{% endblock %}
